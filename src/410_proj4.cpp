@@ -87,6 +87,35 @@ void audit_results() {
 int main()
 {
 	//TODO your code here
+	//Initialize variables
+	vector<thread> baker_threads;
+	int numBakers = 2;
+//	int millisecond_delay = 5000;
+
+	PRINT1("Starting waiter thread");
+	//Initialize waiter
+	std::thread thread_waiter(doWaiter, 1, "../in1.txt");
+
+	//Initialize bakers
+	for (int i = 0; i < numBakers; i++) {
+		PRINT2("Starting baker thread w/ id ", i);
+		baker_threads.push_back(thread(doBaker, i));
+
+	}
+
+//	//wait a certain period of time
+//	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+//
+//	//Have waiter be done taking orders
+//	b_WaiterIsFinished = false;
+
+	//Join baker threads
+	for (auto& baker : baker_threads) {
+		baker.join();
+	}
+
+	audit_results();
+
 	return SUCCESS;
 }
 
