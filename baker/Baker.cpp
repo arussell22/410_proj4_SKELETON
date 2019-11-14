@@ -35,6 +35,9 @@ void Baker::bake_and_box(ORDER &anOrder) {
 		while(box.addDonut(donut) == true){
 			remaining_donuts--;
 		}
+
+		//lock access
+		unique_lock<mutex> lck(mutex_order_outQ);
 		anOrder.boxes.push_back(box);
 	}
 }
@@ -50,12 +53,12 @@ void Baker::bake_and_box(ORDER &anOrder) {
 //when either order_in_Q.size() > 0 or b_WaiterIsFinished == true
 //hint: wait for something to be in order_in_Q or b_WaiterIsFinished == true
 void Baker::beBaker() {
-	{
+	/*{
 		unique_lock<mutex> lck(mutex_order_inQ);
 		while (order_in_Q.empty()) {
 			cv_order_inQ.wait(lck);
 		}
-	}
+	}*/
 
 	while (true) {
 		unique_lock<mutex> lck(mutex_order_inQ);
@@ -64,13 +67,14 @@ void Baker::beBaker() {
 			break;
 		}
 
-		if (order_in_Q.empty() && b_WaiterIsFinished == false) {
-			cv_order_inQ.wait(lck);
+		while (order_in_Q.empty() && b_WaiterIsFinished == false) {
+			cv_order_inQ.wait(lck); //redundant
 		}
 
 		if (!order_in_Q.empty()) {
 			ORDER currOrder = order_in_Q.front();
 			order_in_Q.pop();
+			lck.unlock(); // unlock
 			bake_and_box(currOrder);
 
 		}
