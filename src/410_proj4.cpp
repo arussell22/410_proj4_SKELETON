@@ -6,12 +6,14 @@
 #include <vector>
 #include <string>
 
+#include "../includes/logger.h"
 #include "../includes/box.h"
 #include "../includes/constants.h"
 #include "../includes/waiter.h"
 #include "../includes/baker.h"
 #include "../includes/datastructs.h"
 #include "../includes/PRINT.h"
+#include "../includes/externs.h"
 
 using namespace std;
 
@@ -90,6 +92,9 @@ int main()
 	//Initialize variables
 	vector<thread> baker_threads;
 	int numBakers = 2;
+	Logger baker_log("Baker_log.txt");
+	baker_log.clearlogfile();
+
 //	int millisecond_delay = 5000;
 
 	//Initialize bakers
@@ -101,7 +106,7 @@ int main()
 
 	PRINT1("Starting waiter thread");
 	//Initialize waiter
-	std::thread thread_waiter(doWaiter, 1, "../in1.txt");
+	std::thread thread_waiter(doWaiter, 1, "in1.txt");
 
 //	//wait a certain period of time
 //	std::this_thread::sleep_for(std::chrono::milliseconds(5000));

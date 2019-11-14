@@ -2,7 +2,10 @@
 
 #include "../includes/externs.h"
 #include "../includes/baker.h"
+#include "../includes/logger.h"
 using namespace std;
+
+Logger baker_log("Baker_log.txt");
 
 Baker::Baker(int id):id(id)
 {
@@ -29,17 +32,24 @@ void Baker::bake_and_box(ORDER &anOrder) {
 		// remaining_donuts - dozen
 	}
 	*/
+	baker_log.log("Baker id: " + std::to_string(id) + " Beginning loading donuts for order" + std::to_string(anOrder.order_number) + "\n");
 	while(remaining_donuts > 0){
 		Box box;
 		DONUT donut;
 		while(box.addDonut(donut) == true){
+			baker_log.log("Baker id: " + std::to_string(id) + " Remaining donuts: " + std::to_string(remaining_donuts) + "\n");
 			remaining_donuts--;
+			if (remaining_donuts <= 0) {
+				break;
+			}
 		}
-
-		//lock access
-		unique_lock<mutex> lck(mutex_order_outQ);
 		anOrder.boxes.push_back(box);
 	}
+	baker_log.log("Baker id: " + std::to_string(id) + " Finished loading donuts for order" + std::to_string(anOrder.order_number) + " Number of boxes created: " + std::to_string(anOrder.boxes.size()) + "\n");
+
+	//lock access
+	unique_lock<mutex> lck(mutex_order_outQ);
+	order_out_Vector.push_back(anOrder);
 }
 
 //as long as there are orders in order_in_Q then
@@ -64,6 +74,7 @@ void Baker::beBaker() {
 		unique_lock<mutex> lck(mutex_order_inQ);
 
 		if (order_in_Q.empty() && b_WaiterIsFinished == true) {
+			baker_log.log("No more orders for id: " + std::to_string(id) + ", exiting \n");
 			break;
 		}
 
