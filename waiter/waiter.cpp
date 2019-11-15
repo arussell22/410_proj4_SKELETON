@@ -31,6 +31,7 @@ int Waiter::getNext(ORDER &anOrder){
 //it is done using b_WaiterIsFinished
 void Waiter::beWaiter() {
 	ORDER currOrder;
+	b_WaiterIsFinished = false;
 
 	while(getNext(currOrder) == SUCCESS){
 		{
