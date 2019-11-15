@@ -60,6 +60,11 @@ void Baker::beBaker() {
 	while (true) {
 		unique_lock<mutex> lck(mutex_order_inQ);
 
+		if (order_in_Q.empty() && b_WaiterIsFinished == true) {
+			baker_log.log("No more orders for id: " + std::to_string(id) + ", exiting \n");
+			break;
+		}
+
 		while (order_in_Q.empty() && b_WaiterIsFinished == false) {
 			cv_order_inQ.wait(lck);
 		}
@@ -70,11 +75,6 @@ void Baker::beBaker() {
 			order_in_Q.pop();
 			lck.unlock(); // unlock
 			bake_and_box(currOrder);
-		}
-
-		if (order_in_Q.empty() && b_WaiterIsFinished == true) {
-			baker_log.log("No more orders for id: " + std::to_string(id) + ", exiting \n");
-			break;
 		}
 	}
 }
