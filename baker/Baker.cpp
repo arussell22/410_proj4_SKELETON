@@ -71,6 +71,7 @@ void Baker::beBaker() {
 
 		if (!order_in_Q.empty()) {
 			ORDER currOrder = order_in_Q.front();
+			baker_log.log("Baker id: " + std::to_string(id) + " claimed order: " + std::to_string(currOrder.order_number) + "\n");
 			order_in_Q.pop();
 			lck.unlock(); // unlock
 			bake_and_box(currOrder);
