@@ -90,12 +90,13 @@ int main()
 {
 	//Initialize variables
 	vector<std::string> input_files;
-//	input_files.push_back("in1.txt");
+	input_files.push_back("in1.txt");
 	input_files.push_back("in2.txt");
-//	input_files.push_back("in3.txt");
+	input_files.push_back("in3.txt");
+	input_files.push_back("in4.txt");
 
 	vector<thread> baker_threads;
-	int numBakers = 4;
+	int numBakers = 6;
 
 	Logger baker_log("Baker_log.txt");
 	baker_log.clearlogfile();
