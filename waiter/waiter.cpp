@@ -1,3 +1,7 @@
+//Authors: Anthony Russell & Blake Carson
+//Work done: Entire program completed by Pair Programming
+//Blake drove for Waiter.cpp, Anthony drove for Baker.cpp, split up Logger.cpp and 410_proj4.cpp
+
 #include <string>
 #include "stdlib.h"
 
