@@ -117,14 +117,14 @@ int main()
 		std::thread thread_waiter(doWaiter, 1, file);
 
 
+		//Join waiter thread
+		thread_waiter.join();
 
 		//Join baker threads
 		for (auto& baker : baker_threads) {
 			baker.join();
 		}
 
-		//Join waiter thread
-		thread_waiter.join();
 
 		baker_threads.clear();
 
