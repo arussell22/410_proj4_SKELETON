@@ -20,31 +20,25 @@ Baker::~Baker()
 //1 with 12 donuts, 1 with 1 donut
 void Baker::bake_and_box(ORDER &anOrder) {
 	int remaining_donuts = anOrder.number_donuts;
-//	int total_boxes = remaining_donuts / DOZEN;
-//	if(remaining_donuts % DOZEN == 0) {
-//		total_boxes++;
-//	}
-	
-	/*Box box;
-	DONUT donut;
-	box.addDonut(donut);
-	for(int i = 0; i < total_boxes; i++) {
-		// remaining_donuts - dozen
-	}
-	*/
+
 	baker_log.log("Baker id: " + std::to_string(id) + " Beginning loading donuts for order" + std::to_string(anOrder.order_number) + "\n");
+
 	while(remaining_donuts > 0){
 		Box box;
 		DONUT donut;
+
 		while(box.addDonut(donut) == true){
 			baker_log.log("Baker id: " + std::to_string(id) + " Remaining donuts: " + std::to_string(remaining_donuts) + "\n");
 			remaining_donuts--;
+
 			if (remaining_donuts <= 0) {
 				break;
 			}
 		}
+
 		anOrder.boxes.push_back(box);
 	}
+
 	baker_log.log("Baker id: " + std::to_string(id) + " Finished loading donuts for order" + std::to_string(anOrder.order_number) + " Number of boxes created: " + std::to_string(anOrder.boxes.size()) + "\n");
 
 	//lock access
@@ -63,13 +57,6 @@ void Baker::bake_and_box(ORDER &anOrder) {
 //when either order_in_Q.size() > 0 or b_WaiterIsFinished == true
 //hint: wait for something to be in order_in_Q or b_WaiterIsFinished == true
 void Baker::beBaker() {
-	/*{
-		unique_lock<mutex> lck(mutex_order_inQ);
-		while (order_in_Q.empty()) {
-			cv_order_inQ.wait(lck);
-		}
-	}*/
-
 	while (true) {
 		unique_lock<mutex> lck(mutex_order_inQ);
 
@@ -79,7 +66,7 @@ void Baker::beBaker() {
 		}
 
 		while (order_in_Q.empty() && b_WaiterIsFinished == false) {
-			cv_order_inQ.wait(lck); //redundant
+			cv_order_inQ.wait(lck);
 		}
 
 		if (!order_in_Q.empty()) {
@@ -87,10 +74,6 @@ void Baker::beBaker() {
 			order_in_Q.pop();
 			lck.unlock(); // unlock
 			bake_and_box(currOrder);
-
-		}
-		else {
-			//add Logger stuff maybe everywhere
 		}
 	}
 }
