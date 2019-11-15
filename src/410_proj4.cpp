@@ -88,41 +88,49 @@ void audit_results() {
 
 int main()
 {
-	//TODO your code here
 	//Initialize variables
+	vector<std::string> input_files;
+//	input_files.push_back("in1.txt");
+	input_files.push_back("in2.txt");
+//	input_files.push_back("in3.txt");
+
 	vector<thread> baker_threads;
-	int numBakers = 2;
+	int numBakers = 4;
+
 	Logger baker_log("Baker_log.txt");
 	baker_log.clearlogfile();
 
-//	int millisecond_delay = 5000;
+	for (std::string file : input_files) {
+		baker_log.log("\n Start testing for file: " + file + "\n");
 
-	//Initialize bakers
-	for (int i = 0; i < numBakers; i++) {
-		PRINT2("Starting baker thread w/ id ", i);
-		baker_threads.push_back(thread(doBaker, i));
+		//Initialize bakers
+		for (int i = 0; i < numBakers; i++) {
+			PRINT2("Starting baker thread w/ id ", i);
+			baker_threads.push_back(thread(doBaker, i));
+
+		}
+
+		PRINT1("Starting waiter thread");
+
+		//Initialize waiter
+		std::thread thread_waiter(doWaiter, 1, file);
+
+		//Join waiter thread
+		thread_waiter.join();
+
+		//Join baker threads
+		for (auto& baker : baker_threads) {
+			baker.join();
+		}
+		baker_threads.clear();
+
+		audit_results();
+
+		PRINT2("Size of Out Vector: ", order_out_Vector.size());
+
+		order_out_Vector.clear();
 
 	}
-
-	PRINT1("Starting waiter thread");
-	//Initialize waiter
-	std::thread thread_waiter(doWaiter, 1, "in1.txt");
-
-//	//wait a certain period of time
-//	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-//
-//	//Have waiter be done taking orders
-//	b_WaiterIsFinished = false;
-
-	//Join waiter thread
-	thread_waiter.join();
-
-	//Join baker threads
-	for (auto& baker : baker_threads) {
-		baker.join();
-	}
-
-	audit_results();
 
 	return SUCCESS;
 }
