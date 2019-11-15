@@ -104,6 +104,14 @@ int main()
 	for (std::string file : input_files) {
 		baker_log.log("\n Start testing for file: " + file + "\n");
 
+		PRINT1("Starting waiter thread");
+
+		//Initialize waiter
+		std::thread thread_waiter(doWaiter, 1, file);
+
+		//Join waiter thread
+		thread_waiter.join();
+
 		//Initialize bakers
 		for (int i = 0; i < numBakers; i++) {
 			PRINT2("Starting baker thread w/ id ", i);
@@ -111,20 +119,10 @@ int main()
 
 		}
 
-		PRINT1("Starting waiter thread");
-
-		//Initialize waiter
-		std::thread thread_waiter(doWaiter, 1, file);
-
-
-		//Join waiter thread
-		thread_waiter.join();
-
 		//Join baker threads
 		for (auto& baker : baker_threads) {
 			baker.join();
 		}
-
 
 		baker_threads.clear();
 
